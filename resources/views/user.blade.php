@@ -137,6 +137,7 @@ footer {
       <a href="#tentang">Tentang</a>
       <a href="#produk">Produk</a>
       <a href="#kontak">Kontak</a>
+      <a href="{{ route('admin.login') }}" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px;">🔐 Owner</a>
     </nav>
   </header>
 
@@ -144,47 +145,31 @@ footer {
     <h2>Tentang Kami</h2>
     <p>
      <strong>
-         Kedai Barmud. Barmud sendiri adalah singkatan dari "Barokah Mudah", yaa karena kami ingin tidak hanya ingin sukses,kami juga ingin tempat ini memiliki keberkahan tentu untuk semua orang khususnya orang disekitar. Selain itu alasan mengapa kami  menyediakan menu hanya susu murni karena kami ingin menyediakan kumpulan atau tempat berkumpul yang baik dan sehat.
+         Barmud sendiri adalah singkatan dari "Barokah Mudah" karena kami tidak hanya ingin sukses, tetapi kami juga ingin tempat ini memiliki keberkahan tentunya untuk semua orang, khususnya orang di sekitar. Selain itu, alasan kami menyediakan menu hanya susu murni karena kami ingin menyediakan kumpulan atau tempat berkumpul yang baik dan sehat.
       Maka dari itu pihak kami hanya menyediakan menu susu murni dengan berbagai macam rasa yang tentunya selain enak juga menyehatkan tubuh.
      </strong>
     </p>
   </section>
 
-  <section id="produk" class="section">
+<section id="produk" class="section">
     <h2>Menu Kami</h2>
     <div class="produk">
+      @forelse($items as $item)
       <div class="card">
-        <h3>Susu Original</h3>
-        <img src="{{ asset('images/ori.jpeg') }}" alt="">
-        <p>Rp 10.000</p>
-        <button onclick="pesanWhatsApp('Susu Original')">Pesan</button>
+        <h3>{{ $item->name }}</h3>
+        @if($item->image)
+          <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}">
+        @else
+          <img src="{{ asset('images/ori.jpeg') }}" alt="{{ $item->name }}">
+        @endif
+        <p>Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+        <button onclick="pesanWhatsApp('{{ $item->name }}', {{ $item->price }})">Pesan</button>
       </div>
-      <div class="card">
-        <h3>Susu Cokelat</h3>
-        <img src="{{ asset('images/coklat.jpeg') }}" alt="">
-        <p>Rp 14.000</p>
-        <button onclick="pesanWhatsApp('Susu Cokelat')">Pesan</button>
-      </div>
-      <div class="card">
-        <h3>Susu Stroberi</h3>
-        <img src="{{ asset('images/stroberi.jpeg') }}" alt="">
-        <p>Rp 14.000</p>
-        <button onclick="pesanWhatsApp('Susu Stroberi')">Pesan</button>
-      </div>
-      <div class="card">
-        <h3>Susu Vanilla</h3>
-        <img src="{{ asset('images/vanila.jpeg') }}" alt="">
-        <p>Rp 14.000</p>
-        <button onclick="pesanWhatsApp('Susu Vanilla')">Pesan</button>
-      </div>
-      <div class="card">
-        <h3>Susu Melon</h3>
-        <img src="{{ asset('images/melonn.jpeg') }}" alt="l">
-        <p>Rp 14.000</p>
-        <button onclick="pesanWhatsApp('Susu Melon')">Pesan</button>
-      </div>
+      @empty
+      <p style="text-align: center; width: 100%; color: #999;">Belum ada menu tersedia</p>
+      @endforelse
     </div>
-  </section>
+</section>
 
   
 
@@ -200,18 +185,21 @@ footer {
   </a>
 
   <footer>
-    <p>Thanks for comming to Kedai Barmud</p>
-    <p>see you later</p>
+    <p>Thanks for coming to Kedai Barmud</p>
+    <p>See you later</p>
   </footer>
 
   <script src="script.js"></script>
   <script>
-    function pesanWhatsApp(produk = "") {
+    function pesanWhatsApp(produk = "", harga = "") {
   const nomor = "08987489968";
   let pesan = "Halo Kedai Barmud, saya ingin memesan";
 
   if (produk) {
     pesan += " " + produk;
+    if (harga) {
+      pesan += " (Rp " + harga.toLocaleString('id-ID') + ")";
+    }
   } 
 
   const url = `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
